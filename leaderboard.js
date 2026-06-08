@@ -101,6 +101,7 @@ async function fetchGameHistories(selectedGame) {
   currentGame = selectedGame;
   if (fetchNeeded) {
     rawData = await getRawData(newStart, newEnd, selectedGame);
+    console.log(rawData)
     return rawData;
   }
   return;
@@ -433,7 +434,7 @@ async function syncToggleStatus(game) {
     return;
   }
   statusToggle.disabled = false;
-  const gameSnap = await getDoc(doc(db, "leaderboards", game));
+  const gameSnap = await getDoc(doc(db, "leaderboards-staging", game));
   statusToggle.checked = gameSnap.exists()
     ? gameSnap.data().competitionIsActive === true
     : false;
@@ -444,7 +445,7 @@ document
   .addEventListener("change", async (e) => {
     const gameId = document.getElementById("gameSelect").value;
     await setDoc(
-      doc(db, "leaderboards", gameId),
+      doc(db, "leaderboards-staging", gameId),
       { competitionIsActive: e.target.checked },
       { merge: true },
     );
@@ -464,7 +465,7 @@ async function checkResetEligibility() {
     return;
   }
 
-  const gameDoc = await getDoc(doc(db, "leaderboards", game));
+  const gameDoc = await getDoc(doc(db, "leaderboards-staging", game));
   if (gameDoc.exists() && gameDoc.data().competitionIsActive) {
     resetBtn.disabled = true;
     resetBtn.style.background = "#ccc";
@@ -483,7 +484,7 @@ statusToggle.addEventListener("change", async () => {
 
   const newState = statusToggle.checked;
   try {
-    const gameDocRef = doc(db, "leaderboards", gameId);
+    const gameDocRef = doc(db, "leaderboards-staging", gameId);
     await setDoc(
       gameDocRef,
       { competitionIsActive: newState },
@@ -506,7 +507,7 @@ async function performReset(game) {
   )
     return;
 
-  const historyColRef = collection(db, "leaderboards", game, "gameHistory");
+  const historyColRef = collection(db, "leaderboards-staging", game, "gameHistory");
   const historySnapshot = await getDocs(historyColRef);
 
   if (historySnapshot.empty) {

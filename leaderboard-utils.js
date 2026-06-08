@@ -47,7 +47,7 @@ export async function getRawData(start, end, selectedGame) {
   if (start === 0) {
     const gameHistoryRef = collection(
       db,
-      "leaderboards",
+      "leaderboards-staging",
       selectedGame,
       "gameHistory",
     );
@@ -87,7 +87,7 @@ export async function getRawData(start, end, selectedGame) {
     for (const formattedDate of result) {
       const gameHistories = doc(
         db,
-        "leaderboards",
+        "leaderboards-staging",
         selectedGame,
         "gameHistory",
         formattedDate,
